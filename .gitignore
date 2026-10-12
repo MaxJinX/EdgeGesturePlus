@@ -1,8 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
+/.idea
 .DS_Store
 /build
 /captures
@@ -10,3 +9,10 @@ app/release_mini/*
 app/release/*
 .externalNativeBuild
 *.class
+
+# 签名与密钥：严禁入库
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pepk

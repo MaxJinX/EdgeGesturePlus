@@ -1,13 +1,25 @@
 apply plugin: 'com.android.application'
 
+// 签名信息从根目录的 keystore.properties 读取，该文件不入库（见 .gitignore）。
+// 找不到该文件时自动跳过签名，任何人都能 clone 下来直接编译（assembleRelease 产出未签名包）。
+def keystorePropsFile = rootProject.file('keystore.properties')
+def hasKeystore = keystorePropsFile.exists()
+def keystoreProps = new Properties()
+if (hasKeystore) {
+    keystorePropsFile.withInputStream { stream -> keystoreProps.load(stream) }
+}
+
 android {
     compileSdkVersion 29
     signingConfigs {
-        omarea_Signing {
-            keyAlias 'omarea.com'
-            keyPassword 'asdf1234'
-            storeFile file('../omarea.jks')
-            storePassword 'asdf1234'
+        release {
+            if (hasKeystore) {
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+                // 路径相对项目根目录
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+            }
         }
     }
     defaultConfig {
@@ -15,8 +27,8 @@ android {
         applicationId "com.omarea.gesture"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 104
-        versionName "1.6.4"
+        versionCode 105
+        versionName "1.6.4-plus"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -28,11 +40,15 @@ android {
         }
         release {
             debuggable true
-            signingConfig signingConfigs.omarea_Signing
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.lifecycle("[EdgeGesturePlus] 未找到 keystore.properties，将产出未签名的 release 包。")
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            // signingConfig signingConfigs.omarea_Signing
+            // signingConfig signingConfigs.release
             minifyEnabled false
             debuggable true
             jniDebuggable = false
