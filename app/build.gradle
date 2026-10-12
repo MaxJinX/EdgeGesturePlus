@@ -6,7 +6,7 @@ android {
         omarea_Signing {
             keyAlias 'omarea.com'
             keyPassword 'asdf1234'
-            storeFile file('D:/omoarea.jks')
+            storeFile file('../omarea.jks')
             storePassword 'asdf1234'
         }
     }
@@ -28,6 +28,7 @@ android {
         }
         release {
             debuggable true
+            signingConfig signingConfigs.omarea_Signing
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {

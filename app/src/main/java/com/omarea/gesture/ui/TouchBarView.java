@@ -48,8 +48,6 @@ public class TouchBarView extends View {
     private long lastEventTime = 0L;
     private int lastEvent = -1;
 
-    private long voluntarilyCancelTime = 0L; // 最后一次主动取消的垂直滑动操作的时间（例如：在两侧边缘手势上垂直滑动，认为是不合理操作）
-
     private float touchRawX;
     private float touchRawY;
 
@@ -126,31 +124,6 @@ public class TouchBarView extends View {
         this.eventTouch = shortTouch;
         this.eventHover = touchHover;
         this.accessibilityService = context;
-    }
-
-    // 滑动方向错误或距离滑动不够不足以触发动作的手势
-    private void onInValidGesture() {
-        clearEffect();
-        long time = System.currentTimeMillis();
-
-        // 短时间内连续触发无效的垂直滑动
-        if ((time - voluntarilyCancelTime) < 4000L) {
-            antiTouchMode();
-        }
-
-        voluntarilyCancelTime = time;
-    }
-
-    // 防误触模式
-    private void antiTouchMode() {
-        if (antiTouchModeOn != null) {
-            antiTouchModeOn.run();
-        }
-    }
-
-    private Runnable antiTouchModeOn;
-    void setAntiTouchModeToggle(Runnable antiTouchModeOn) {
-        this.antiTouchModeOn = antiTouchModeOn;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -268,7 +241,7 @@ public class TouchBarView extends View {
                 // float moveX = a - b;
                 if (moveY > FLIP_DISTANCE && touchMaxMoveX < (FLIP_DISTANCE / 2F)) {
                     isGestureCompleted = true;
-                    onInValidGesture();
+                    clearEffect();
                 }
             }
         }
@@ -343,9 +316,9 @@ public class TouchBarView extends View {
                 else
                     onShortTouch();
             } else {
-                // 如果连续两次滑动到了一定距离又没有触发手势，认为是误触
+                // 滑动距离不足或方向不正确，未触发手势
                 if (touchMaxMoveX > flingValue) {
-                    onInValidGesture();
+                    clearEffect();
                     return true;
                 }
             }

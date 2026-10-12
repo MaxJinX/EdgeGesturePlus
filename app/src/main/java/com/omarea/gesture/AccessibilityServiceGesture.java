@@ -25,6 +25,7 @@ import com.omarea.gesture.remote.RemoteAPI;
 import com.omarea.gesture.ui.SideGestureBar;
 import com.omarea.gesture.ui.QuickPanel;
 import com.omarea.gesture.util.GlobalState;
+import com.omarea.gesture.util.MiuiNavBar;
 import com.omarea.gesture.util.Recents;
 
 import java.util.ArrayList;
@@ -410,6 +411,35 @@ public class AccessibilityServiceGesture extends AccessibilityService {
                     setServiceInfo();
                 } else {
                     colorPolingApps = Arrays.asList(Gesture.config.getString("color_polling_apps", "").split("\n"));
+                }
+            }
+        }).start();
+
+        reapplyHiddenNavBar();
+    }
+
+    /**
+     * 开机 / 无障碍服务重启后重新隐藏 MIUI 导航栏。
+     *
+     * <p>MIUI 会在开机启动桌面（launcher）时把 hide_gesture_line 重置回 0，
+     * 因此这里分几次延迟重试，确保最终生效。
+     */
+    private void reapplyHiddenNavBar() {
+        if (!Gesture.config.getBoolean(SpfConfig.HIDE_MIUI_NAV_BAR, SpfConfig.HIDE_MIUI_NAV_BAR_DEFAULT)) {
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 累计延迟 3s / 18s / 58s
+                long[] delays = new long[]{3000L, 15000L, 40000L};
+                for (long delay : delays) {
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+                    MiuiNavBar.applyIfEnabled(AccessibilityServiceGesture.this);
                 }
             }
         }).start();

@@ -160,4 +160,12 @@ public class SpfConfig {
 
     public static String INPUT_METHOD_AVOID = "INPUT_METHOD_AVOID"; // 输入法避让
     public static boolean INPUT_METHOD_AVOID_DEFAULT = false;
+
+    // 隐藏 MIUI 导航栏（需 ROOT）
+    public static final String HIDE_MIUI_NAV_BAR = "HIDE_MIUI_NAV_BAR";
+    public static final boolean HIDE_MIUI_NAV_BAR_DEFAULT = false;
+    // 开启前备份的原始导航栏设置，用于关闭时还原
+    public static final String MIUI_NAV_BAR_BACKUP_VALID = "MIUI_NAV_BAR_BACKUP_VALID";
+    public static final String MIUI_NAV_BAR_BACKUP_FSG = "MIUI_NAV_BAR_BACKUP_FSG";
+    public static final String MIUI_NAV_BAR_BACKUP_LINE = "MIUI_NAV_BAR_BACKUP_LINE";
 }

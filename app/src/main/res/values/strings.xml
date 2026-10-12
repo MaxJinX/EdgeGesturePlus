@@ -74,4 +74,10 @@
     <string name="white_bar_landscape_color">横屏小横条颜色</string>
     <string name="white_bar_portrait_color">竖屏小横条颜色</string>
 
+    <string name="hide_miui_nav_bar">隐藏 MIUI 导航栏</string>
+    <string name="hide_miui_nav_bar_desc">需 ROOT。开启后切换为全面屏手势并隐藏底部手势提示线，让屏幕完全交给本应用的手势；重启手机后会自动重新生效。</string>
+    <string name="hide_miui_nav_bar_enabled">已隐藏导航栏（若无变化可重启系统界面）</string>
+    <string name="hide_miui_nav_bar_disabled">已还原为开启前的导航栏设置</string>
+    <string name="hide_miui_nav_bar_failed">操作失败，请确认已授予本应用 ROOT 权限</string>
+
 </resources>

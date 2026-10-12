@@ -23,6 +23,7 @@ import com.omarea.gesture.R;
 import com.omarea.gesture.SpfConfig;
 import com.omarea.gesture.StartActivity;
 import com.omarea.gesture.shell.KeepShellPublic;
+import com.omarea.gesture.util.MiuiNavBar;
 
 public class FragmentOther extends FragmentSettingsBase {
     @Override
@@ -107,6 +108,39 @@ public class FragmentOther extends FragmentSettingsBase {
                 config.edit().putBoolean(SpfConfig.ROOT, false).apply();
                 restartService();
             }
+            }
+        });
+
+        // 隐藏 MIUI 导航栏（需 ROOT）
+        final Switch hide_miui_nav_bar = activity.findViewById(R.id.hide_miui_nav_bar);
+        hide_miui_nav_bar.setChecked(config.getBoolean(SpfConfig.HIDE_MIUI_NAV_BAR, SpfConfig.HIDE_MIUI_NAV_BAR_DEFAULT));
+        hide_miui_nav_bar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            final View switchView = v;
+            final Checkable ele = (Checkable) v;
+            final boolean targetState = ele.isChecked();
+            // shell 操作耗时不可控（首次还会弹出 ROOT 授权框），放到子线程执行避免阻塞界面
+            switchView.setEnabled(false);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                final boolean success = targetState ? MiuiNavBar.enable(activity) : MiuiNavBar.disable(activity);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    switchView.setEnabled(true);
+                    if (!success) {
+                        ele.setChecked(!targetState);
+                        Gesture.toast(getString(R.string.hide_miui_nav_bar_failed), Toast.LENGTH_LONG);
+                        return;
+                    }
+                    config.edit().putBoolean(SpfConfig.HIDE_MIUI_NAV_BAR, targetState).apply();
+                    Gesture.toast(getString(targetState ? R.string.hide_miui_nav_bar_enabled : R.string.hide_miui_nav_bar_disabled), Toast.LENGTH_SHORT);
+                    }
+                });
+                }
+            }).start();
             }
         });
 

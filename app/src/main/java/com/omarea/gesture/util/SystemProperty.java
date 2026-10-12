@@ -37,4 +37,16 @@ class SystemProperty {
             return false;
         }
     }
+
+    /**
+     * 是否 MIUI / HyperOS 设备
+     */
+    boolean isMiui() {
+        try {
+            String version = get("ro.miui.ui.version.name");
+            return version != null && !version.trim().isEmpty();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }
